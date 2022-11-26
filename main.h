@@ -1,46 +1,39 @@
-#ifndef PRINT_F
-#define PRINT_F
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#include "main.h"
 
 /**
-* struct convert - defines a structure for symbols and functions
-*
-* @sym: The operator
-* @f: The function associated
-*/
-struct convert
+ * get_print - selects the right printing function
+ * depending on the conversion specifier passed to _printf
+ * @s: character that holds the conversion specifier
+ * Description: the function loops through the structs array
+ * func_arr[] to find a match between the specifier passed to _printf
+ * and the first element of the struct, and then the approriate
+ * printing function
+ * Return: a pointer to the matching printing function
+ */
+int (*get_print(char s))(va_list, flags_t *)
 {
-	char *sym;
-	int (*f)(va_list);
-};
-typedef struct convert conver_t;
+	ph func_arr[] = {
+		{'i', print_int},
+		{'s', print_string},
+		{'c', print_char},
+		{'d', print_int},
+		{'u', print_unsigned},
+		{'x', print_hex},
+		{'X', print_hex_big},
+		{'b', print_binary},
+		{'o', print_octal},
+		{'R', print_rot13},
+		{'r', print_rev},
+		{'S', print_bigS},
+		{'p', print_address},
+		{'%', print_percent}
+		};
+	int flags = 14;
 
-/*Main functions*/
-int parser(const char *format, conver_t f_list[], va_list arg_list);
-int _printf(const char *format, ...);
-int _write_char(char);
-int print_char(va_list);
-int print_string(va_list);
-int print_percent(va_list);
-int print_integer(va_list);
-int print_number(va_list);
-int print_binary(va_list);
-int print_reversed(va_list arg);
-int rot13(va_list);
-int unsigned_integer(va_list);
-int print_octal(va_list list);
-int print_hex(va_list list);
-int print_heX(va_list list);
+	register int i;
 
-/*Helper functions*/
-unsigned int base_len(unsigned int, int);
-char *rev_string(char *);
-void write_base(char *str);
-char *_memcpy(char *dest, char *src, unsigned int n);
-int print_unsgined_number(unsigned int);
-
-
-#endif
+	for (i = 0; i < flags; i++)
+		if (func_arr[i].c == s)
+			return (func_arr[i].f);
+	return (NULL);
+}
